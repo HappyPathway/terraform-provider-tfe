@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	tfe "github.com/hashicorp/go-tfe"
+	tfe "github.com/HappyPathway/go-tfe"
 	"github.com/hashicorp/terraform/helper/schema"
 )
 

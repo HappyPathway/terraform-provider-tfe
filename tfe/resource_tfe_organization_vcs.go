@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	tfe "github.com/hashicorp/go-tfe"
+	tfe "github.com/HappyPathway/go-tfe"
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
@@ -20,11 +20,11 @@ func resourceTFEOrganizationVCS() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"github_key": &schema.Schema{
+			"key": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"github_secret": &schema.Schema{
+			"secret": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -59,8 +59,8 @@ func resourceTFEOrganizationVCSCreate(d *schema.ResourceData, meta interface{}) 
 
 	// Get the organization name.
 	organization := d.Get("organization").(string)
-	key := d.Get("github_key").(string)
-	secret := d.Get("github_secret").(string)
+	key := d.Get("key").(string)
+	secret := d.Get("secret").(string)
 	http_url := d.Get("http_url").(string)
 	api_url := d.Get("api_url").(string)
 	service_provider := d.Get("service_provider")
@@ -77,7 +77,7 @@ func resourceTFEOrganizationVCSCreate(d *schema.ResourceData, meta interface{}) 
 		log.Printf("[DEBUG] Create new VCS Connection for Org: %s", organization)
 		vcs, err := tfeClient.OAuthClients.Create(ctx, organization, options)
 		if err != nil {
-			return fmt.Errorf("Error creating the new organization %s: %v", organization, err)
+			return fmt.Errorf("Error creating the new vcs for %s: %v", organization, err)
 		}
 
 		d.SetId(vcs.ID)
@@ -97,5 +97,26 @@ func resourceTFEOrganizationVCSUpdate(d *schema.ResourceData, meta interface{}) 
 }
 
 func resourceTFEOrganizationVCSDelete(d *schema.ResourceData, meta interface{}) error {
+	tfeClient := meta.(*tfe.Client)
+
+	// Get the organization name.
+
+	organization := d.Get("organization").(string)
+	vcs_id := d.Get("vcs_id").(string)
+
+	options := tfe.OAuthCLientDestroyOptions{
+		CLIENT_ID: tfe.String(vcs_id),
+	}
+
+	// Create a new options struct.
+	log.Printf("[DEBUG] Delete VCS Connection for Org: %s", organization)
+	log.Printf("[DEBUG] Deleting VCS Connection: %s", vcs_id)
+
+	vcs, err := tfeClient.OAuthClients.Delete(ctx, options)
+	if err != nil {
+		return fmt.Errorf("Error deleting the vcs id %s: %v", vcs_id, err)
+	}
+	d.SetId(vcs.ID)
+
 	return nil
 }

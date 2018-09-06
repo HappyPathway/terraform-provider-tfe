@@ -7,7 +7,7 @@ import (
 	"log"
 	"os"
 
-	tfe "github.com/hashicorp/go-tfe"
+	tfe "github.com/HappyPathway/go-tfe"
 	"github.com/hashicorp/hcl"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/svchost"
@@ -68,6 +68,7 @@ func Provider() terraform.ResourceProvider {
 			"tfe_team_token":         resourceTFETeamToken(),
 			"tfe_workspace":          resourceTFEWorkspace(),
 			"tfe_variable":           resourceTFEVariable(),
+			"tfe_registry_module":    resourceTFERegistryModule(),
 		},
 
 		ConfigureFunc: providerConfigure,
